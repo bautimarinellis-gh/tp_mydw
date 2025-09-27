@@ -2,12 +2,15 @@ import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 
-const app = express();
+import productoRoutes from "./routes/productoRoute";
+import detallePedidoRoutes from "./routes/detallePedidoRoute";
+import pedidoRoutes from "./routes/pedidoRoute";
 
 dotenv.config();
 
+const app = express();
 const MONGO_URI = process.env.MONGO_URI!;
-const PORT = process.env.PORT!;
+const PORT = process.env.PORT || 3000;
 
 
 app.use(express.json());
@@ -16,23 +19,33 @@ app.get("/", (req, res) => {
     res.send("Hello World");
 });
 
+app.use("/api/productos", productoRoutes);
+app.use("/api/detalles", detallePedidoRoutes);
+app.use("/api/pedidos", pedidoRoutes);
 
 const connectToDb = async () => {
-try {
-    await mongoose.connect(MONGO_URI);
-    console.log("MongoDB conectado");
+    try {
+        await mongoose.connect(MONGO_URI);
+        console.log(" MongoDB conectado");
     } catch (error) {
-    console.error(`Error de conexión a MongoDB: ${error}`);
-    process.exit(1);
+        console.error(` Error de conexión a MongoDB: ${error}`);
+        process.exit(1);
     }
 };
 
+
 const startServer = async () => {
-    await connectToDb();
-    app.listen(PORT, () => {
-    console.log(`Servidor corriendo en puerto ${PORT}`);
-    });
+    try {
+        await connectToDb();
+        app.listen(PORT, () => {
+            console.log(` Servidor corriendo en puerto ${PORT}`);
+        });
+    } catch (error) {
+        console.error(" Error al iniciar el servidor:", error);
+        process.exit(1);
+    }
 };
+
 
 startServer();
 
