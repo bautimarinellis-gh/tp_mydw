@@ -61,7 +61,6 @@ Inicia sesión y obtiene tokens de autenticación.
 }
 ```
 
-**Nota:** Los tokens también se envían automáticamente como cookies HTTP-only para mayor seguridad.
 
 #### POST `/api/usuarios/logout`
 
