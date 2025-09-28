@@ -19,18 +19,17 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.get("/", (req, res) => {
-    res.json({
-        message: "🛒 E-commerce Backend API",
-        version: "1.0.0",
-        status: "✅ Servidor funcionando correctamente",
-        endpoints: {
-            auth: "/api/usuarios",
-            products: "/api/productos", 
-            cart: "/api/detalles",
-            orders: "/api/pedidos"
-        },
-        documentation: "Ver README.md para documentación completa"
-    });
+    res.send(`
+    <h1>E-commerce Backend API</h1>    
+    <h3>Endpoints:</h3>
+    <ul>
+        <li>POST /api/usuarios/register - Registro</li>
+        <li>POST /api/usuarios/login - Login</li>
+        <li>GET /api/productos - Productos</li>
+        <li>POST /api/detalles/ - Carrito</li>
+        <li>POST /api/pedidos/ - Pedidos</li>
+    </ul>
+    `);
 });
 
 app.use("/api/usuarios", usuarioRoutes);
