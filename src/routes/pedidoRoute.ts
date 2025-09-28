@@ -1,11 +1,13 @@
 import express from "express";
 import { createPedido, deletePedido, getPedidos, getPedido } from "../controllers/pedidoController";
+import { authMiddleware } from "../middlewares/authMiddleware";
 
 const router = express.Router();
 
-router.post("/", createPedido);
-router.delete("/:id", deletePedido);
-router.get("/", getPedidos);
-router.get("/:id", getPedido);
+// Rutas protegidas - requieren autenticación
+router.post("/", authMiddleware, createPedido);
+router.delete("/:id", authMiddleware, deletePedido);
+router.get("/", authMiddleware, getPedidos);
+router.get("/:id", authMiddleware, getPedido);
 
 export default router;

@@ -1,10 +1,12 @@
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import cookieParser from "cookie-parser";
 
 import productoRoutes from "./routes/productoRoute";
 import detallePedidoRoutes from "./routes/detallePedidoRoute";
 import pedidoRoutes from "./routes/pedidoRoute";
+import usuarioRoutes from "./routes/usuarioRoute";
 
 dotenv.config();
 
@@ -14,11 +16,13 @@ const PORT = process.env.PORT || 3000;
 
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.get("/", (req, res) => {
     res.send("Hello World");
 });
 
+app.use("/api/usuarios", usuarioRoutes);
 app.use("/api/productos", productoRoutes);
 app.use("/api/detalles", detallePedidoRoutes);
 app.use("/api/pedidos", pedidoRoutes);
