@@ -19,7 +19,18 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.get("/", (req, res) => {
-    res.send("Hello World");
+    res.json({
+        message: "🛒 E-commerce Backend API",
+        version: "1.0.0",
+        status: "✅ Servidor funcionando correctamente",
+        endpoints: {
+            auth: "/api/usuarios",
+            products: "/api/productos", 
+            cart: "/api/detalles",
+            orders: "/api/pedidos"
+        },
+        documentation: "Ver README.md para documentación completa"
+    });
 });
 
 app.use("/api/usuarios", usuarioRoutes);
