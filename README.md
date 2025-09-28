@@ -231,3 +231,5 @@ Obtiene todos los pedidos del usuario autenticado.
 Obtiene un pedido específico del usuario autenticado.
 
 #### DELETE `/api/pedidos/:id`
+
+Elimina un pedido (requiere autenticación).
