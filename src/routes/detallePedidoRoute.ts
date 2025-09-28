@@ -4,7 +4,6 @@ import { authMiddleware } from "../middlewares/authMiddleware";
 
 const router = express.Router();
 
-// Rutas protegidas - requieren autenticación
 router.post("/", authMiddleware, addDetalleToPedido);
 router.get("/", authMiddleware, getDetallesTemporales);
 router.delete("/:index", authMiddleware, removeDetalleFromPedido);

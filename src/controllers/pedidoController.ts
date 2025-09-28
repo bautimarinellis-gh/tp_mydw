@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import Pedido from "../models/pedidoSchema";
+import Producto from "../models/productoSchema";
 import { getDetalles, clearDetalles, getDetallesLength } from "../utils/detallesTemporales";
 
 export const createPedido = async (req: Request, res: Response) => {
@@ -22,15 +23,32 @@ export const createPedido = async (req: Request, res: Response) => {
 
         const detallesTemporales = getDetalles(userId);
 
-        // Calcular el total sumando todos los subtotales
-        const total = detallesTemporales.reduce((sum, detalle) => sum + detalle.subtotal, 0);
+        // Convertir códigos de producto a ObjectIds
+        const detallesConObjectIds = await Promise.all(
+            detallesTemporales.map(async (detalle) => {
+                // Buscar el producto por código
+                const producto = await Producto.findOne({ code: detalle.producto });
+                if (!producto) {
+                    throw new Error(`Producto con código ${detalle.producto} no encontrado`);
+                }
+                
+                return {
+                    producto: producto._id,
+                    cantidad: detalle.cantidad,
+                    subtotal: detalle.subtotal
+                };
+            })
+        );
 
-        // Crear el pedido con los detalles temporales y el usuario
+        // Calcular el total sumando todos los subtotales
+        const total = detallesConObjectIds.reduce((sum, detalle) => sum + detalle.subtotal, 0);
+
+        // Crear el pedido con los detalles convertidos y el usuario
         const newPedido = await Pedido.create({
             usuario: userId,
             fecha: new Date(),
             total: total,
-            detalles: detallesTemporales
+            detalles: detallesConObjectIds
         });
 
         // Limpiar los detalles temporales después de crear el pedido

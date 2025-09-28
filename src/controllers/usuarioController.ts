@@ -54,14 +54,14 @@ export const loginUser = async (req: Request, res: Response) => {
 
         // Configurar cookies para persistir los tokens
         res.cookie('accessToken', accessToken, {
-            httpOnly: true,
+            httpOnly: true, 
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
             maxAge: 60 * 1000 
         });
 
         res.cookie('refreshToken', refreshToken, {
-            httpOnly: true,
+            httpOnly: true, 
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
             maxAge: 7 * 24 * 60 * 60 * 1000 // 7 días
@@ -125,7 +125,7 @@ export const refreshToken = async (req: Request, res: Response) => {
 
         // Actualizar la cookie del access token
         res.cookie('accessToken', newAccessToken, {
-            httpOnly: true,
+            httpOnly: false, // Cambiado a false para poder ver en el navegador
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
             maxAge: 60 * 1000 

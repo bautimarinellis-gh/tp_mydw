@@ -10,12 +10,20 @@ const jwtAccessExpiresIn = process.env.JWT_EXPIRES_IN!;
 const jwtRefreshSecret = process.env.JWT_REFRESH_SECRET!;
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
-    const token = req.cookies.accessToken;
+    // Buscar accessToken en cookies o en header Authorization
+    const accessToken = req.cookies.accessToken || req.headers.authorization?.replace('Bearer ', '');
+    
+    if (!accessToken) {
+        return res.status(401).json({ message: "Access token requerido" });
+    }
     
     try {
-        jwt.verify(token, SECRET_KEY);
+        // Validar el accessToken con la SECRET_KEY y decodificar la información del usuario
+        const decoded = jwt.verify(accessToken, SECRET_KEY) as JwtPayload;
+        (req as any).user = { id: decoded._id };
         next();
     } catch (error) {
+        // Si el accessToken es inválido, intentar renovarlo con refreshToken
         validateRefreshToken(req, res, next);
     }
 };
@@ -28,6 +36,9 @@ const validateRefreshToken = (req: Request, res: Response, next: NextFunction) =
     try {
         const decoded = jwt.verify(token, jwtRefreshSecret) as JwtPayload;
 
+        // Establecer la información del usuario en req.user
+        (req as any).user = { id: decoded._id };
+
         const payload = { _id: decoded._id };
         const options = { expiresIn: jwtAccessExpiresIn };
         const accessToken = jwt.sign(payload, SECRET_KEY, options as SignOptions);
@@ -36,7 +47,7 @@ const validateRefreshToken = (req: Request, res: Response, next: NextFunction) =
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
-            maxAge: 60 * 1000 
+            maxAge: 15 * 60 * 1000 // 15 minutos
         });
 
         next();
